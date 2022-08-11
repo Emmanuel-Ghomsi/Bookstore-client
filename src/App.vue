@@ -1,32 +1,36 @@
 <template>
   <div id="app">
-    <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </nav>
-    <router-view />
+    <Header />
+    <router-view id="router-view" :key="$route.fullPath" />
+    <Footer />
   </div>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+// @ is an alias to /src
+import Header from "@/components/Header.vue";
+import Footer from "@/components/Footer.vue";
 
-nav {
-  padding: 30px;
-}
+export default {
+  name: "App",
+  components: {
+    Header,
+    Footer,
+  },
+  created: function() {
+    this.$store.dispatch("fetchCategories");
+    const cartString = localStorage.getItem(this.$store.state.CART_STORAGE_KEY);
 
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
+    if (cartString) {
+      const shoppingCart = JSON.parse(cartString);
+      this.$store.commit("SET_CART", shoppingCart);
+    }
 
-nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+    const orderDetailString = sessionStorage.getItem(this.$store.state.ORDER_DETAIL_STORAGE_KEY)
+    if (orderDetailString) {
+      const orderDetailData = JSON.parse(orderDetailString)
+      this.$store.commit('SET_ORDER_DETAIL', orderDetailData)
+    }
+  }
+};
+</script>
